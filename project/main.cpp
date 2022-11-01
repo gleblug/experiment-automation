@@ -1,4 +1,5 @@
-#include "Device.hpp"
+#include "Generator.hpp"
+#include "Oscilloscope.hpp"
 #include <vector>
 #include <unistd.h>
 
@@ -13,8 +14,10 @@ int main() {
 		auto path = "usbtmc" + std::to_string(i);
 		Device device(path);
 
-		if (device.name == "AKIP-3409-4") generator_path = path;
-		else if (device.name == "AKIP-4131/1") oscilloscope_path = path;
+		if (device.get_name() == "AKIP-3409-4")
+			generator_path = path;
+		else if (device.get_name() == "AKIP-4131/1")
+			oscilloscope_path = path;
 		else {
 			std::cerr << "Devices not available!" << std::endl;
 			return EXIT_FAILURE;
