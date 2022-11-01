@@ -50,33 +50,53 @@ public:
 
 class Generator: public Device {
 public:
-	Generator(std::string path_name): Device(path_name), channel("C1") {  }
+	Generator(std::string path_name): Device(path_name), m_channel("C1") {  }
+
+	void set_channel(size_t channel) {
+		if (channel == 1 || channel == 2) m_channel = "C" + std::to_string(channel);
+		else std::cerr << "Invalid channel" << std::endl;
+	}
 
 	void buzz() {
 		command("BUZZ ON");
 	}
 
-	void basic_wave(
-		size_t channel,
-		std::string type,
-		double frequency,
-		double period,
-		double amplitude,
-		double offset,
-		double phase
-	);
-
-	void set_channel(size_t ch) {
-		if (ch == 1 || ch == 2) channel = "C" + std::to_string(ch);
-		else std::cerr << "Invalid channel" << std::endl;
+	void set_waveform(std::string waveform) {
+		m_waveform = waveform;
+		command(m_channel + ":BSWV WVTP," + waveform);
 	}
 
-	void set_waveform(std::string type) {
-		command(channel + ":BSWV WVTP," + type);
+	void set_frequency(double frequency) {
+		m_frequency = frequency;
+		command(m_channel + ":BSWV FRQ," + std::to_string(frequency));
 	}
+
+	void set_period(double period) {
+		command(m_channel + ":BSWV PERI," + std::to_string(period));
+	}
+
+	void set_amplitude(double amplitude) {
+		command(m_channel + ":BSWV AMP," + std::to_string(amplitude));
+	}
+
+	void set_offset(double offset) {
+		command(m_channel + ":BSWV OFST," + std::to_string(offset));
+	}
+
+	void set_phase(double phase) {
+		command(m_channel + ":BSWV PHSE," + std::to_string(phase));
+	}
+
+	void update();
 
 private:
-	std::string channel;
+	std::string m_channel;
+	std::string m_waveform;
+	double m_frequency;
+	double m_period;
+	double m_amplitude;
+	double m_offset;
+	double m_phase;
 };
 
 
