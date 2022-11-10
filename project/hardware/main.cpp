@@ -23,20 +23,14 @@ int main() {
 			return EXIT_FAILURE;
 		}
 	}
-
+	
 	Generator generator(generator_path);
 	Oscilloscope oscilloscope(oscilloscope_path);
 	
 
 	// work with devices
 	
-	//generator.buzz();
-
-	std::string waveform;
-	std::cout << "Input waveform (SINE, SQUARE, RAMP, PULSE, NOISE, ARB, DC, PRBS, IQ):" << std::endl;
-	std::cin >> waveform;
-
-	generator.set_waveform(waveform);
+	std::cout << oscilloscope.query("C1:WF? DAT2").substr(1, 3) << std::endl;
 	
 	return EXIT_SUCCESS;
 }

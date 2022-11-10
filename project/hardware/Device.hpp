@@ -13,10 +13,10 @@ public:
 		return name;
 	}
 
-protected:
 	void command(std::string comm);
 	std::string query(std::string comm);
 
+protected:
 	std::string name;
 	std::string root_path;
 };
