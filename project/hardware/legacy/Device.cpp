@@ -10,7 +10,7 @@ Device::Device(std::string path_name) : root_path("/dev/" + path_name)
     name = response;
 }
 
-void Device::command(std::string comm)
+void Device::command(std::string const &comm) const
 {
     std::ofstream out;
     out.open(root_path);
@@ -24,7 +24,7 @@ void Device::command(std::string comm)
     }
 }
 
-std::string Device::query(std::string comm)
+std::string Device::query(std::string const &comm) const
 {
     command(comm);
 

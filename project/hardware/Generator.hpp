@@ -1,17 +1,22 @@
 #pragma once
-#include "Device.hpp"
 
-class Generator : public Device
+#include <string>
+#include <iostream>
+
+#include "Utils.hpp"
+
+
+class Generator
 {
 public:
-    Generator(std::string path_name) : Device(path_name), m_channel("C1") {}
+    Generator();
 
-    void set_channel(size_t channel)
+    void command(std::string const &comm) const;
+    std::string query(std::string const &comm) const;
+
+    void set_channel(channels ch)
     {
-        if (channel == 1 || channel == 2)
-            m_channel = "C" + std::to_string(channel);
-        else
-            std::cerr << "Invalid channel" << std::endl;
+        m_channel = "C" + std::to_string(static_cast<ind_t>(ch));
     }
 
     void buzz()
@@ -50,5 +55,6 @@ public:
     }
 
 private:
+    std::string m_root_path;
     std::string m_channel;
 };

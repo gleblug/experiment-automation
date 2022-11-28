@@ -1,61 +1,70 @@
 #pragma once
-#include "Device.hpp"
-#include "Measurement.hpp"
+#include <iostream>
 #include <string>
-#include <unistd.h>
+#include <exception>
+#include <fstream>
 
-class Oscilloscope : public Device
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/uio.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+
+#include "Utils.hpp"
+
+class Oscilloscope
 {
 public:
-    Oscilloscope(std::string path_name) : Device(path_name), m_channel("C1") {}
+    Oscilloscope(std::string server_ip = "10.11.13.220", port_t server_port = 5024);
 
-    void set_channel(size_t channel)
+    size_t command(std::string const &comm)
     {
-        if (channel == 1 || channel == 2)
-            m_channel = "C" + std::to_string(channel);
-        else
-            std::cerr << "Invalid channel" << std::endl;
+        return send(m_client_side, comm.c_str(), comm.length(), 0);
     }
 
-    Measurement get_pkpk()
+    std::string request();
+    size_t request(char *buf, size_t msg_size);
+    std::string query(std::string const& comm);
+
+    void set_channel(channels ch)
     {
-        comm_param_custom("PKPK");
-        comm_param_stat(1);
-
-        // size_t count = 0;
-        // while (count <= 20)
-        // {
-        //     std::string response = quer_param_value("STAT1");
-        //     size_t count_ind = response.find("count,") + 5;
-        //     std::string count_str = response.substr(count_ind);
-        //     std::cerr << count_str;
-        //     comm_param_stat(0);
-
-        //     count = std::stoi(count_str);
-        // }
-        std::string response = quer_param_value("STAT1");
-        comm_param_stat(0);
-
-        std::cout << response << std::endl;
-        return Measurement(response, 1);
+        m_channel = "C" + std::to_string(static_cast<ind_t>(ch));
     }
 
+    double parser(std::string const& comm, std::string const& to_find, std::string const& units);
+
+    double get_vdiv()
+    {
+        return parser(m_channel + ":VDIV?", "VDIV", "V");
+    }
+
+    double get_voffset()
+    {
+        return parser(m_channel + ":OFST?", "OFST", "V");
+    }
+
+    double get_timebase()
+    {
+        return parser("TDIV?", "TDIV", "S");
+    }
+
+    double get_sampling_rate()
+    {
+        return parser("SARA?", "SARA", "Sa/s");
+    }
+
+    void save_waveform(std::string file_name = "waveform.csv");
+
+    ~Oscilloscope();
 
 private:
-    void comm_param_custom(std::string param)
-    {
-        command("PACU " + param + "," + m_channel);
-    }
-
-    void comm_param_stat(bool condition)
-    {
-        command("PASTAT " + condition ? "ON" : "OFF");
-    }
-
-    std::string quer_param_value(std::string custom)
-    {
-        return query("PAVA? " + custom);
-    }
-
+    int m_client_side;
     std::string m_channel;
 };

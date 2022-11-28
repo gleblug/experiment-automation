@@ -13,12 +13,9 @@ public:
 		return name;
 	}
 
-	void command(std::string comm);
-	std::string query(std::string comm);
+	void command(std::string const &comm) const;
+	std::string query(std::string const &comm) const;
 
-protected:
-	std::string name;
-	std::string root_path;
 };
 
 
