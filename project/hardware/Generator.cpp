@@ -1,14 +1,33 @@
 #include "Generator.hpp"
 
+#include <string>
+#include <vector>
 #include <fstream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Generator::Generator() : m_channel("C1")
 {
-    std::string response = query("*IDN?");
-    response.erase(0, response.find(',') + 1);
-    response.erase(response.find(','));
+    auto devices_path = files_path("/dev/usbtmc");
+    bool success = false;
 
-    // name = response;
+    for (auto const &device_path : devices_path)
+    {
+        m_root_path = device_path;
+        std::string response = query("*IDN?");
+        response.erase(0, response.find(',') + 1);
+        response.erase(response.find(','));
+
+        if (response == "AKIP-3409-4")
+        {
+            success = true;
+            break;
+        }
+    }
+
+    if (!success)
+        throw std::runtime_error("Generator (AKIP-3409-4) is not available!");
 }
 
 void Generator::command(std::string const &comm) const
