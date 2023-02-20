@@ -1,0 +1,16 @@
+l1 = 68mm
+y1' = 73mm
+deltaX' = 102 mm
+y2'=38mm
+l2 = 87mm
+deltaX = 19mm
+
+Abberation
+h(10) = 0mm
+h(20) = 1mm
+h(40) = 3mm
+h(diameter) = nonius_mm
+
+Chromatic abberation
+(Red) = 0.2mm
+(BLue) = -0.3mm
